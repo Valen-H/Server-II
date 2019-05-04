@@ -1,0 +1,57 @@
+{
+  "name": "vale-server-ii",
+  "version": "1.0.0",
+  "description": "A Server framework",
+  "main": "dist/lib/server.js",
+  "author": "V. H.",
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "@types/node": "^8.10.48",
+    "typescript": "3.4.0-rc"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "typings": "lib/typings",
+  "dependencies": {
+    "fs-extra": "^7.0.1"
+  },
+  "scripts": {
+    "test": "node test/index.js || npm test",
+    "build": "tsc -w"
+  },
+  "keywords": [
+    "server",
+    "middleware",
+    "static"
+  ],
+  "engines": {
+    "node": ">=10.10.0"
+  },
+  "license": "ISC",
+  "homepage": "https://github.com/ValentinHacker/Server-II#README.md",
+  "bugs": {
+    "url": "https://github.com/ValentinHacker/Server-II/issues",
+    "email": "alternativexxxy@gmail.com"
+  },
+  "contributors": [],
+  "files": [
+    "*"
+  ],
+  "bin": {},
+  "man": [],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ValentinHacker/Server-II.git",
+    "directory": "./"
+  },
+  "config": {
+    "port": 1234
+  },
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "os": [],
+  "cpu": [],
+  "publishConfig": {},
+  "bundleDependencies": []
+}
