@@ -54,9 +54,6 @@
     <AdditionalFiles Include="package.json">
       <Publish>True</Publish>
     </AdditionalFiles>
-    <AdditionalFiles Include="README.md">
-      <Publish>True</Publish>
-    </AdditionalFiles>
     <AdditionalFiles Include="tsconfig.json">
       <Publish>True</Publish>
     </AdditionalFiles>
@@ -90,7 +87,6 @@
     <Folder Include="dist\builtin\public\" />
     <Folder Include="dist\builtin\" />
     <Folder Include="dist\builtin\private\" />
-    <Folder Include="dist\builtin\public\okay\" />
     <Folder Include="lib\" />
     <Folder Include="dist\" />
     <Folder Include="lib\typings\" />
@@ -106,21 +102,10 @@
     <Content Include="dist\builtin\private\dir.htm">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="dist\builtin\public\.noindex" />
-    <Content Include="dist\builtin\public\ok.htm">
+    <Content Include="dist\builtin\public\index.htmlx">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="dist\builtin\public\ok.txt">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="dist\builtin\public\okay\index.xjs">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="dist\builtin\public\okay\ok.htm" />
-    <Content Include="dist\builtin\public\okay\__test.txt">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="Server.md" />
+    <Content Include="README.md" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

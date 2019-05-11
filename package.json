@@ -5,14 +5,14 @@
   "main": "dist/lib/server.js",
   "author": "V. H.",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.5",
+    "@types/fs-extra": "^5.1.0",
     "@types/node": "^8.10.48",
-    "typescript": "3.4.0-rc"
+    "typescript": "^3.4.5"
   },
   "directories": {
     "lib": "lib"
   },
-  "typings": "lib/typings",
+  "typings": "lib/typings/lib/server.d.ts",
   "dependencies": {
     "fs-extra": "^7.0.1"
   },

@@ -12,13 +12,15 @@ module.exports = {
     name: "fix",
     afters: [],
     befores: ["directory", "static", "end"],
-    priorities: [".htmx", ".html", ".htm", ".jsx", ".js", ".cssx", ".css"].reverse(),
+    priorities: [".htmx", ".htmlx", ".html", ".htm", ".xjs", ".js", ".cssx", ".css"].reverse(),
     _fromFile: true,
     body: async function body(req, res, event) {
-        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), ''), //localize url
+        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp('^' + event.server.opts.root, "i"), ''), //localize url
         targ = path.join(event.server.opts.serveDir, event.server.opts.public, pth); //absolute
-        event.server._debug(event.reqcntr, "(FIX.TS) REQ:", uri.href);
+        event.server._debug(event.reqcntr, "(FIX.TS) REQ:", uri.href, pth, targ);
         try { //path valid?
+            if (!uri.pathname.startsWith(event.server.opts.root))
+                throw Classes.Errors.EBADROOT;
             if (event.carriage._global.patherr)
                 throw Classes.Errors.EBADPATH;
             await paccess(targ); //checks both dir and file
@@ -26,6 +28,10 @@ module.exports = {
         }
         catch (err) {
             try { //parent dir exists?
+                if (!uri.pathname.startsWith(event.server.opts.root))
+                    throw Classes.Errors.EBADROOT;
+                if (event.carriage._global.patherr)
+                    throw Classes.Errors.EBADPATH;
                 //@ts-ignore
                 let files = await pdir(path.dirname(targ)), reg = new RegExp('^' + path.basename(pth), "i"), //queried filename, recommended: requests without ext
                 //@ts-ignore

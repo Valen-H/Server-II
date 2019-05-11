@@ -21,12 +21,13 @@ module.exports = {
 	_fromFile: true,
 	body: async function body(req: http.IncomingMessage, res: http.ServerResponse, event: Classes.evt): Promise<boolean> {
 		let uri = new URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`),
-			pth: string = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), ''),  //localize url
+			pth: string = uri.pathname.replace(new RegExp('^' + event.server.opts.root, "i"), '/'),  //localize url
 			targ: string = path.join(event.server.opts.serveDir, event.server.opts.public, pth);  //absolute
 		
 		event.server._debug(event.reqcntr, "(DIRECTORY.TS) REQ:", uri.href);
 		
 		try {  //path valid?
+			if (!uri.pathname.startsWith(event.server.opts.root)) throw Classes.Errors.EBADROOT;
 			if (event.carriage._global.patherr) throw Classes.Errors.EBADPATH;
 			let stats: fs.Stats = await pstat(targ);
 			
@@ -50,7 +51,7 @@ module.exports = {
 					event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASINDEX");
 				} else {  //has no index
 					files = files.filter((file: string) => !event.server.opts.nodir.test(file)); //filter-out __files
-					res.writeHead(200, event.server.opts.http.STATUS_CODES[200], { "Content-Type": "text/html; charset=UTF-8" });  //hardcoded ok
+					res.setHeader("Content-Type", "text/html; charset=UTF-8");  //hardcoded ok
 					
 					event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASNOINDEX");
 					

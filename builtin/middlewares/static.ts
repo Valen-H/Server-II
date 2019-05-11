@@ -24,19 +24,20 @@ module.exports = {
 		 */
 		
 		let uri = new URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`),
-			pth: string = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), ''),  //localize url
+			pth: string = uri.pathname.replace(new RegExp('^' + event.server.opts.root, "i"), ''),  //localize url
 			targ: string = path.join(event.server.opts.serveDir, event.server.opts.public, pth);  //absolute
 		
 		event.server._debug(event.reqcntr, "(STATIC.TS) REQ:", uri.href);
 		
 		if (!res.finished) {
 			try {
+				if (!uri.pathname.startsWith(event.server.opts.root)) throw Classes.Errors.EBADROOT;
 				if (event.carriage._global.patherr) throw Classes.Errors.EBADPATH;
 				let stats: fs.Stats = await pstat(targ);
 				
 				if (stats.isFile()) {
 					event.server._debug(event.reqcntr, "(STATIC.TS) VALID");
-					res.writeHead(200, event.server.opts.http.STATUS_CODES[200], { "Content-Type": event.server.opts.contentMappings[path.extname(targ)] });
+					res.setHeader("Content-Type", event.server.opts.contentMappings[path.extname(targ)]);
 					res.end(await serve(targ, event));
 				} else {
 					event.fncntr -= 2;

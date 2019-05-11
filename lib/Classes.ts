@@ -3,8 +3,6 @@
 import * as http from "http";
 import * as fs from "fs-extra";
 import * as path from "path";
-//@ts-ignore
-import * as worker_threads from "worker_threads"; //split req
 
 
 export module Classes {
@@ -30,7 +28,7 @@ export module Classes {
 				[ext: string]: string;
 			}; // .htm -> text/html ...
 			
-			http: {
+			http?: {
 				//require('http')
 				[idx: string]: any;
 			};
@@ -44,6 +42,7 @@ export module Classes {
 	export namespace Errors {
 		
 		export const EBADPATH = new URIError("Bad Path.");
+		export const EBADROOT = new URIError("Bad Root.");
 		
 	} //Errors
 	
@@ -94,9 +93,12 @@ export module Classes {
 		logs: string = "";
 		_debuglog: string = "";
 		_reqcntr: number = 0;
+		data: {
+			[idx: string]: any
+		} = { };
 		
 		static defaultOpts: Options.ServerOptions = {
-			serveDir: "__Server",
+			serveDir: path.resolve("__Server"),
 			index: /^index\.html?x?$/i,
 			root: '/', //url mapped to serveDir
 			mwbuilt: `..${path.sep}builtin${path.sep}middlewares`,
@@ -120,6 +122,7 @@ export module Classes {
 				".jpeg": "image/jpeg",
 				".svg": "image/svg+xml",
 				".png": "image/png",
+				".bmp": "image/bmp",
 				".ico": "image/x-icon",
 				".js": "application/javascript",
 				".jsx": "application/javascript",
@@ -199,7 +202,7 @@ export module Classes {
 			return fs.readdir(from, (err: Error, files: string[]) => {
 				if (!err) {
 					for (let file of files) {
-						let name: string = ".." + path.sep + ".." + path.sep + path.join(this.opts.serveDir, this.opts.mwdir, file);
+						let name: string = path.join(this.opts.serveDir, this.opts.mwdir, file);
 						delete require.cache[require.resolve(name)];
 						if (file.endsWith(".js")) this.mwrs.push(require(name));
 					}

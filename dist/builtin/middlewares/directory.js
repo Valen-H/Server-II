@@ -14,10 +14,12 @@ module.exports = {
     befores: ["static", "end"],
     _fromFile: true,
     body: async function body(req, res, event) {
-        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), ''), //localize url
+        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp('^' + event.server.opts.root, "i"), '/'), //localize url
         targ = path.join(event.server.opts.serveDir, event.server.opts.public, pth); //absolute
         event.server._debug(event.reqcntr, "(DIRECTORY.TS) REQ:", uri.href);
         try { //path valid?
+            if (!uri.pathname.startsWith(event.server.opts.root))
+                throw Classes.Errors.EBADROOT;
             if (event.carriage._global.patherr)
                 throw Classes.Errors.EBADPATH;
             let stats = await pstat(targ);
@@ -40,7 +42,7 @@ module.exports = {
                 }
                 else { //has no index
                     files = files.filter((file) => !event.server.opts.nodir.test(file)); //filter-out __files
-                    res.writeHead(200, event.server.opts.http.STATUS_CODES[200], { "Content-Type": "text/html; charset=UTF-8" }); //hardcoded ok
+                    res.setHeader("Content-Type", "text/html; charset=UTF-8"); //hardcoded ok
                     event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASNOINDEX");
                     try { //has .noindex?
                         let noidx = (await preadFile(path.join(targ, event.server.opts.noindex))).toString().trim();

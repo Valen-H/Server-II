@@ -11,8 +11,8 @@ module.exports = {
             res.setHeader("Tk", 'N');
         }
         else {
-            res.addTrailers({ "Tk": 'N' });
             res.addTrailers({ "Server": "Vale_Server-II" });
+            res.addTrailers({ "Tk": 'N' });
         }
         if (!res.finished) {
             res.writeHead(404, event.server.opts.http.STATUS_CODES[404]);

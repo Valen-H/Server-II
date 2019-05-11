@@ -8,6 +8,7 @@ var Classes;
     let Errors;
     (function (Errors) {
         Errors.EBADPATH = new URIError("Bad Path.");
+        Errors.EBADROOT = new URIError("Bad Root.");
     })(Errors = Classes.Errors || (Classes.Errors = {})); //Errors
     class Middleware {
         constructor(name, befores = [], afters = [], body, _fromFile = false) {
@@ -34,6 +35,7 @@ var Classes;
             this.logs = "";
             this._debuglog = "";
             this._reqcntr = 0;
+            this.data = {};
             this.opts = Object.assign({}, Server.defaultOpts);
             this.opts = Object.assign(this.opts, opts);
             if (this.opts.allowmw) {
@@ -91,7 +93,7 @@ var Classes;
             return fs.readdir(from, (err, files) => {
                 if (!err) {
                     for (let file of files) {
-                        let name = ".." + path.sep + ".." + path.sep + path.join(this.opts.serveDir, this.opts.mwdir, file);
+                        let name = path.join(this.opts.serveDir, this.opts.mwdir, file);
                         delete require.cache[require.resolve(name)];
                         if (file.endsWith(".js"))
                             this.mwrs.push(require(name));
@@ -160,7 +162,7 @@ var Classes;
         } //_debug
     } //Server
     Server.defaultOpts = {
-        serveDir: "__Server",
+        serveDir: path.resolve("__Server"),
         index: /^index\.html?x?$/i,
         root: '/',
         mwbuilt: `..${path.sep}builtin${path.sep}middlewares`,
@@ -184,6 +186,7 @@ var Classes;
             ".jpeg": "image/jpeg",
             ".svg": "image/svg+xml",
             ".png": "image/png",
+            ".bmp": "image/bmp",
             ".ico": "image/x-icon",
             ".js": "application/javascript",
             ".jsx": "application/javascript",

@@ -11,8 +11,8 @@ module.exports = {
 			res.setHeader("Server", "Vale_Server-II");
 			res.setHeader("Tk", 'N');
 		} else {
-			res.addTrailers({ "Tk": 'N'});
 			res.addTrailers({ "Server": "Vale_Server-II"});
+			res.addTrailers({ "Tk": 'N'});
 		}
 		
 		if (!res.finished) {

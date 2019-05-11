@@ -17,17 +17,19 @@ module.exports = {
          * if is file
          * if 404
          */
-        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), ''), //localize url
+        let uri = new url_1.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`), pth = uri.pathname.replace(new RegExp('^' + event.server.opts.root, "i"), ''), //localize url
         targ = path.join(event.server.opts.serveDir, event.server.opts.public, pth); //absolute
         event.server._debug(event.reqcntr, "(STATIC.TS) REQ:", uri.href);
         if (!res.finished) {
             try {
+                if (!uri.pathname.startsWith(event.server.opts.root))
+                    throw Classes.Errors.EBADROOT;
                 if (event.carriage._global.patherr)
                     throw Classes.Errors.EBADPATH;
                 let stats = await pstat(targ);
                 if (stats.isFile()) {
                     event.server._debug(event.reqcntr, "(STATIC.TS) VALID");
-                    res.writeHead(200, event.server.opts.http.STATUS_CODES[200], { "Content-Type": event.server.opts.contentMappings[path.extname(targ)] });
+                    res.setHeader("Content-Type", event.server.opts.contentMappings[path.extname(targ)]);
                     res.end(await serve(targ, event));
                 }
                 else {

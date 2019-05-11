@@ -20,7 +20,7 @@ export declare module Classes {
             contentMappings?: {
                 [ext: string]: string;
             };
-            http: {
+            http?: {
                 [idx: string]: any;
             };
             builtins?: boolean;
@@ -29,6 +29,7 @@ export declare module Classes {
     }
     namespace Errors {
         const EBADPATH: URIError;
+        const EBADROOT: URIError;
     }
     type evt = {
         stop: () => boolean;
@@ -60,6 +61,9 @@ export declare module Classes {
         logs: string;
         _debuglog: string;
         _reqcntr: number;
+        data: {
+            [idx: string]: any;
+        };
         static defaultOpts: Options.ServerOptions;
         constructor(opts?: Options.ServerOptions);
         /**
