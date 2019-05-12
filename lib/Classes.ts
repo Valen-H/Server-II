@@ -58,6 +58,15 @@ export module Classes {
 		reqcntr: number;
 	};
 	
+
+	/**
+	 * Middleware class.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @class Middleware
+	 */
 	export class Middleware {
 		name: string;
 		befores: string[];
@@ -85,6 +94,15 @@ export module Classes {
 		
 	} //Middleware
 	
+	/**
+	 * Starting Class.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @class Server
+	 * @extends {require("events").EventEmitter}
+	 */
 	export class Server extends require("events").EventEmitter {
 		
 		opts: Options.ServerOptions;

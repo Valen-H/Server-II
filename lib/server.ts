@@ -11,6 +11,16 @@ export module Server {
 		copy: Function = promisify(fs.copy),
 		ensureDir: Function = promisify(fs.ensureDir);
 	
+	/**
+	 * A wrapper for setting up the Server.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @param {Classes.Options.ServerOptions} opts
+	 * @param {boolean} [over=false]
+	 * @returns {Promise<Classes.Server>}
+	 */
 	export async function setup(opts: Classes.Options.ServerOptions, over: boolean = false): Promise<Classes.Server> {
 		let nopts: Classes.Options.ServerOptions = { };
 		Object.assign(nopts, opts);

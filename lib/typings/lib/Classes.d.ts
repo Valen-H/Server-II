@@ -42,6 +42,14 @@ export declare module Classes {
         fncntr: number;
         reqcntr: number;
     };
+    /**
+     * Middleware class.
+     *
+     * @author V. H.
+     * @date 2019-05-12
+     * @export
+     * @class Middleware
+     */
     class Middleware {
         name: string;
         befores: string[];
@@ -54,6 +62,15 @@ export declare module Classes {
         body(req: any, res: any, event: evt): Promise<boolean>;
     }
     const Server_base: any;
+    /**
+     * Starting Class.
+     *
+     * @author V. H.
+     * @date 2019-05-12
+     * @export
+     * @class Server
+     * @extends {require("events").EventEmitter}
+     */
     class Server extends Server_base {
         opts: Options.ServerOptions;
         httpsrv: http.Server;

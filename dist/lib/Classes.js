@@ -10,6 +10,14 @@ var Classes;
         Errors.EBADPATH = new URIError("Bad Path.");
         Errors.EBADROOT = new URIError("Bad Root.");
     })(Errors = Classes.Errors || (Classes.Errors = {})); //Errors
+    /**
+     * Middleware class.
+     *
+     * @author V. H.
+     * @date 2019-05-12
+     * @export
+     * @class Middleware
+     */
     class Middleware {
         constructor(name, befores = [], afters = [], body, _fromFile = false) {
             this._fromFile = false;
@@ -28,6 +36,15 @@ var Classes;
         } //body
     } //Middleware
     Classes.Middleware = Middleware;
+    /**
+     * Starting Class.
+     *
+     * @author V. H.
+     * @date 2019-05-12
+     * @export
+     * @class Server
+     * @extends {require("events").EventEmitter}
+     */
     class Server extends require("events").EventEmitter {
         constructor(opts = Server.defaultOpts) {
             super();

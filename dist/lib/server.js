@@ -8,6 +8,16 @@ const util_1 = require("util");
 var Server;
 (function (Server) {
     const paccess = util_1.promisify(fs.access), copy = util_1.promisify(fs.copy), ensureDir = util_1.promisify(fs.ensureDir);
+    /**
+     * A wrapper for setting up the Server.
+     *
+     * @author V. H.
+     * @date 2019-05-12
+     * @export
+     * @param {Classes.Options.ServerOptions} opts
+     * @param {boolean} [over=false]
+     * @returns {Promise<Classes.Server>}
+     */
     async function setup(opts, over = false) {
         let nopts = {};
         Object.assign(nopts, opts);
