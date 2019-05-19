@@ -1,6 +1,6 @@
 {
   "name": "vale-server-ii",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Server framework",
   "main": "dist/lib/server.js",
   "author": "V. H.",
