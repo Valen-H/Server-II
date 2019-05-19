@@ -8,8 +8,8 @@ import Classes from "../../lib/Classes";
 const Classes = module.parent.exports.Classes;
 
 const pstat: Function = promisify(fs.stat),
-	preaddir: Function = promisify(fs.readdir),
-	preadFile: Function = promisify(fs.readFile);
+	preadFile: Function = promisify(fs.readFile),
+	cache: Map<string, string> = new Map();
 
 module.exports = {
 	name: "static",
@@ -59,8 +59,18 @@ module.exports = {
 
 async function serve(file: string, event: Classes.evt, preproc: boolean = true): Promise<string | Buffer> {
 	try {
-		let data: string = (await preadFile(file)).toString(),
+		let data: string,
 			prep: RegExp = /\.((html?|css)x|xjs)$/i;
+		
+		if (cache.has(file)) {
+			data = cache.get(file);
+			preadFile(file).then((err: Error, buff: Buffer) => {
+				if (!err) cache.set(file, buff.toString());
+			});
+		} else {
+			data = (await preadFile(file)).toString();
+			cache.set(file, data);
+		}
 		
 		if (prep.test(file)) {
 			data = data.replace(event.server.opts.builtmpl, (m, p) => eval(p));

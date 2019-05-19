@@ -13,18 +13,21 @@
 4. Port customization  
 5. Templating/Indexing  
 6. Event-Oriented  
+7. Caching  
   
 ### (Builtin) Middlewares  
   
 1. fix - Fixes incorrect URLs  
+    * TODO: .xjs -> .jsx etc...  
 2. directory - Serves index or performs directory indexing  
     * .noindex (customisable) - empty to block indexing, fill to block specific files  
     * files starting with '__' (customisable) - blocked from indexing by default  
-    * TODOs: .notmpl - no templating, and a special request to fetch raw and bypass translation  
+    * TODOs: .notmpl - no templating (for .jsx files mostly), and a special request to fetch raw and bypass translation  
 3. static - Serves raw content and compiles templated content  
+    * TODO: Add caching  
     * Templated content: .xjs, .htmx, .htmlx, .cssx  
 4. end - Applies appropriate headers and ends requests  
-5. TODO: secure - Prevents bruteforcing / DoS  
+5. TODO: secure - Prevents bruteforcing / DoS (-> HTTP 429)  
   
 > Templated content example.htmx: `Hello $$usr$$!`. Translated during serving, change templating characters through server options.  
   

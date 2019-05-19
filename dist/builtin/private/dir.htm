@@ -47,7 +47,7 @@
 	<div id="main">
 		<ul>
 			$$
-				files.map(file => `<a href="./${file}"><li>${file}</li></a>`).join("<br />");
+				files.map(file => `<a href="./${file.name}"><li>${file.name}</li></a>`).join("<br />");
 			$$
 		</ul>
 	</div>

@@ -9,7 +9,21 @@ import Classes from "../../lib/Classes";
 const Classes = module.parent.exports.Classes;
 
 const pstat: Function = promisify(fs.stat),
-	preaddir: Function = promisify(fs.readdir),
+	cachedir: Map<string, string[]> = new Map(),
+	preaddir: Function = async function readdir(name: string) {
+		if (cachedir.has(name)) {
+			//@ts-ignore
+			fs.readdir(name, { withFileTypes: true, encoding: "utf8" }).then((files: string[]) => {
+				cachedir.set(name, files);
+			});
+
+			return cachedir.get(name);
+		} else {
+			//@ts-ignore
+			cachedir.set(name, await fs.readdir(name, { withFileTypes: true, encoding: "utf8" }));
+			return cachedir.get(name);
+		}
+	},
 	preadFile: Function = promisify(fs.readFile);
 
 var dir: string;  //precache builtin file
@@ -42,15 +56,20 @@ module.exports = {
 					return await event.stop();
 				}
 				
-				let files: string[] = await preaddir(targ),  //throws
-					idx: string = files.find((file: string) => event.server.opts.index.test(file)); //finds index -> blocks indexing
+				//@ts-ignore
+				let files: fs.Dirent[] = await preaddir(targ),  //throws
+					//@ts-ignore
+					idx: string = files.find((file: fs.Dirent) => event.server.opts.index.test(file.name)); //finds index -> blocks indexing
 				
 				if (idx) {  //has index file
+					//@ts-ignore
+					idx = idx.name;  //dirent
 					uri.pathname = path.join(uri.pathname, idx);
 					req.url = uri.pathname + uri.search + uri.hash;
 					event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASINDEX");
 				} else {  //has no index
-					files = files.filter((file: string) => !event.server.opts.nodir.test(file)); //filter-out __files
+					//@ts-ignore
+					files = files.filter((file: fs.Dirent) => !event.server.opts.nodir.test(file.name)); //filter-out __files
 					res.setHeader("Content-Type", "text/html; charset=UTF-8");  //hardcoded ok
 					
 					event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASNOINDEX");
@@ -64,10 +83,11 @@ module.exports = {
 							
 							event.server._debug(event.reqcntr, "(DIRECTORY.TS) NOINDEXFILLED");
 							
-							res.end(await index(event, files.filter((file: string) => regs.some((reg: RegExp) => !reg.test(file))), uri));
+							//@ts-ignore
+							res.end(await index(event, files.filter((file: fs.Dirent) => regs.some((reg: RegExp) => !reg.test(file.name))), uri));
 						} else {  //.noindex empty
 							event.server._debug(event.reqcntr, "(DIRECTORY.TS) NOINDEXEMPT");
-							res.end(await index(event, [], uri));
+							res.end(await index(event, [ ], uri));
 						}
 					} catch (err) {  //has no .noindex
 						event.server._debug(event.reqcntr, "(DIRECTORY.TS) HASNO_NOINDEX");
@@ -85,6 +105,7 @@ module.exports = {
 		} catch (err) {  //path invalid - 404
 			event.carriage._global.patherr = true;
 			event.server._debug(event.reqcntr, "(DIRECTORY.TS) ERR: PATHERR");
+			console.error(err);
 		}
 		
 		event.server._debug(event.reqcntr, "(DIRECTORY.TS) PASS");
@@ -92,10 +113,11 @@ module.exports = {
 	} //body
 };
 
-async function index(event: Classes.evt, files: string[], uri: URL): Promise<string> {  //serve dir.htm
+//@ts-ignore
+async function index(event: Classes.evt, files: fs.Dirent[], uri: URL): Promise<string> {  //serve dir.htm
 	dir = dir || ((await preadFile(path.join(event.server.opts.serveDir, event.server.opts.private, event.server.opts.dir))).toString());  //builtins, can be cached
 	
-	let pth: string = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), '');
+	var pth: string = uri.pathname.replace(new RegExp("^." + event.server.opts.root, "i"), '');  //inside tmpls
 	
 	try {
 		return dir.replace(event.server.opts.builtmpl, (m, p) => eval(p));

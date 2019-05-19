@@ -8,8 +8,21 @@ import Classes from "../../lib/Classes";
 const Classes = module.parent.exports.Classes;
 
 const paccess = promisify(fs.access),
-	//@ts-ignore
-	pdir = promisify(function readdir(name: string, callback: (err: Error, files: string[]) => any) { return fs.readdir(name, { withFileTypes: true, encoding: "utf8" }, callback); });
+	cachedir: Map<string, string[]> = new Map(),
+	preaddir = async function readdir(name: string) {
+		if (cachedir.has(name)) {
+			//@ts-ignore
+			fs.readdir(name, { withFileTypes: true, encoding: "utf8" }).then((files: string[]) => {
+				cachedir.set(name, files);
+			});
+
+			return cachedir.get(name);
+		} else {
+			//@ts-ignore
+			cachedir.set(name, await fs.readdir(name, { withFileTypes: true, encoding: "utf8" }));
+			return cachedir.get(name);
+		}
+	};
 
 module.exports = {
 	name: "fix",
@@ -34,7 +47,7 @@ module.exports = {
 				if (!uri.pathname.startsWith(event.server.opts.root)) throw Classes.Errors.EBADROOT;
 				if (event.carriage._global.patherr) throw Classes.Errors.EBADPATH;
 				//@ts-ignore
-				let files: fs.Dirent[] = await pdir(path.dirname(targ)),
+				let files: fs.Dirent[] = await preaddir(path.dirname(targ)),
 					reg: RegExp = new RegExp('^' + path.basename(pth), "i"),  //queried filename, recommended: requests without ext
 					//@ts-ignore
 					pfiles: fs.Dirent[] = files.filter((file: fs.Dirent): boolean => reg.test(file.name)).sort((a: fs.Dirent, b: fs.Dirent): number => {

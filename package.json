@@ -7,6 +7,7 @@
   "devDependencies": {
     "@types/fs-extra": "^5.1.0",
     "@types/node": "^8.10.48",
+    "tslib": "^1.9.3",
     "typescript": "^3.4.5"
   },
   "directories": {
