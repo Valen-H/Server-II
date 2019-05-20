@@ -78,7 +78,7 @@ export module Classes {
 		_after: number = 0;
 		
 		
-		constructor(name: string, befores: string[] = [ ], afters: string[] = [ ], body: (req, res, event: evt) => Promise<boolean>, _fromFile: boolean = false) {
+		constructor(name: string, befores: string[] = [ ], afters: string[] = [ ], body: (req: any, res: any, event: evt) => Promise<boolean>, _fromFile: boolean = false) {
 			this.name = name.toString();
 			this.befores = Array.from(befores);
 			this.afters = Array.from(afters);
@@ -88,7 +88,7 @@ export module Classes {
 		
 		
 		//@Override
-		async body(req, res, event: evt): Promise<boolean> {
+		async body(req: any, res: any, event: evt): Promise<boolean> {
 			return false;
 		} //body
 		
@@ -166,7 +166,7 @@ export module Classes {
 				this.emit("mwloaded");
 			}
 			
-			this.httpsrv = this.opts.http.createServer(async (req, res) => {
+			this.httpsrv = this.opts.http.createServer(async (req: any, res: any) => {
 				this.emit("request", req, res);
 				
 				let event: evt = {
