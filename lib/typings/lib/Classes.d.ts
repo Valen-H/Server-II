@@ -1,29 +1,30 @@
 /// <reference types="node" />
 import * as http from "http";
+import { EventEmitter } from "events";
 export declare module Classes {
     namespace Options {
         interface ServerOptions {
-            serveDir?: string;
-            index?: RegExp;
-            root?: string;
-            mwbuilt?: string;
-            prbuilt?: string;
-            pubuilt?: string;
-            mwdir?: string;
-            private?: string;
-            public?: string;
-            noindex?: string;
-            nodir?: RegExp;
-            builtmpl?: RegExp;
-            dir?: string;
-            port?: number;
-            contentMappings?: {
+            readonly serveDir?: string;
+            readonly index?: RegExp;
+            readonly root?: string;
+            readonly mwbuilt?: string;
+            readonly prbuilt?: string;
+            readonly pubuilt?: string;
+            readonly mwdir?: string;
+            readonly private?: string;
+            readonly public?: string;
+            readonly noindex?: string;
+            readonly nodir?: RegExp;
+            readonly builtmpl?: RegExp;
+            readonly dir?: string;
+            readonly port?: number;
+            readonly contentMappings?: {
                 [ext: string]: string;
             };
-            http?: {
+            readonly http?: {
                 [idx: string]: any;
             };
-            builtins?: boolean;
+            readonly builtins?: boolean;
             allowmw?: boolean;
         }
     }
@@ -32,15 +33,15 @@ export declare module Classes {
         const EBADROOT: URIError;
     }
     type evt = {
-        stop: () => boolean;
-        pass: (data?: any) => Promise<boolean>;
-        carriage: {
+        readonly stop: () => boolean;
+        readonly pass: (data?: any) => Promise<boolean>;
+        readonly carriage: {
             [idx: string]: any;
         };
-        server: Server;
+        readonly server: Server;
         stp: boolean;
         fncntr: number;
-        reqcntr: number;
+        readonly reqcntr: number;
     };
     /**
      * Middleware class.
@@ -54,14 +55,13 @@ export declare module Classes {
         name: string;
         befores: string[];
         afters: string[];
-        _fromFile: boolean;
+        _fromFile?: boolean;
         _idx: number;
         _before: number;
         _after: number;
         constructor(name: string, befores: string[], afters: string[], body: (req: any, res: any, event: evt) => Promise<boolean>, _fromFile?: boolean);
         body(req: any, res: any, event: evt): Promise<boolean>;
     }
-    const Server_base: any;
     /**
      * Starting Class.
      *
@@ -71,14 +71,14 @@ export declare module Classes {
      * @class Server
      * @extends {require("events").EventEmitter}
      */
-    class Server extends Server_base {
-        opts: Options.ServerOptions;
-        httpsrv: http.Server;
+    class Server extends EventEmitter {
+        readonly opts: Options.ServerOptions;
+        readonly httpsrv: http.Server;
         mwrs: Middleware[];
         logs: string;
         _debuglog: string;
         _reqcntr: number;
-        data: {
+        readonly data: {
             [idx: string]: any;
         };
         static defaultOpts: Options.ServerOptions;
@@ -97,7 +97,7 @@ export declare module Classes {
         /**
          * Order middlewares
          */
-        _recalc(): void;
+        private _recalc;
         /**
          * Log stuff
          * @param msg - joined with whitespace
@@ -109,6 +109,14 @@ export declare module Classes {
          * @param msg - joined with whitespace
          */
         _debug(...msg: any[]): this;
+        on(event: "mwloaded", listener: (...args: any[]) => void): this;
+        on(event: "request", listener: (...args: any[]) => void): this;
+        on(event: "_debug", listener: (...args: any[]) => void): this;
+        on(event: "log", listener: (...args: any[]) => void): this;
+        once(event: "mwloaded", listener: (...args: any[]) => void): this;
+        once(event: "request", listener: (...args: any[]) => void): this;
+        once(event: "_debug", listener: (...args: any[]) => void): this;
+        once(event: "log", listener: (...args: any[]) => void): this;
     }
 }
 export default Classes;

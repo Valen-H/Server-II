@@ -3,6 +3,7 @@
 import * as http from "http";
 import * as fs from "fs-extra";
 import * as path from "path";
+import { EventEmitter } from "events";
 
 
 export module Classes {
@@ -10,30 +11,30 @@ export module Classes {
 	export declare namespace Options {
 		
 		export interface ServerOptions {
-			serveDir?: string; //local root
-			index?: RegExp; //index filename
-			root?: string; //url / mapped
-			mwbuilt?: string; //middleware / builtin
-			prbuilt?: string; //private / builtin
-			pubuilt?: string; //public / builtin
-			mwdir?: string; //local
-			private?: string; //local
-			public?: string; //local
-			noindex?: string; //.noindex name
-			nodir?: RegExp; //__files prefix
-			builtmpl?: RegExp; //$$code$$ prefix
-			dir?: string; //'dir.htm' sub-private / local
-			port?: number;
-			contentMappings?: {
+			readonly serveDir?: string; //local root
+			readonly index?: RegExp; //index filename
+			readonly root?: string; //url / mapped
+			readonly mwbuilt?: string; //middleware / builtin
+			readonly prbuilt?: string; //private / builtin
+			readonly pubuilt?: string; //public / builtin
+			readonly mwdir?: string; //local
+			readonly private?: string; //local
+			readonly public?: string; //local
+			readonly noindex?: string; //.noindex name
+			readonly nodir?: RegExp; //__files prefix
+			readonly builtmpl?: RegExp; //$$code$$ prefix
+			readonly dir?: string; //'dir.htm' sub-private / local
+			readonly port?: number;
+			readonly contentMappings?: {
 				[ext: string]: string;
 			}; // .htm -> text/html ...
 			
-			http?: {
+			readonly http?: {
 				//require('http')
 				[idx: string]: any;
 			};
 			
-			builtins?: boolean; //pass mwbuilt to mwdir if empty etc...
+			readonly builtins?: boolean; //pass mwbuilt to mwdir if empty etc...
 			allowmw?: boolean; //read mwrs from folder
 		} //ServerOptions
 		
@@ -41,21 +42,21 @@ export module Classes {
 	
 	export namespace Errors {
 		
-		export const EBADPATH = new URIError("Bad Path.");
-		export const EBADROOT = new URIError("Bad Root.");
+		export const EBADPATH: URIError = new URIError("Bad Path.");
+		export const EBADROOT: URIError = new URIError("Bad Root.");
 		
 	} //Errors
 	
 	export type evt = {
-		stop: () => boolean;
-		pass: (data?: any) => Promise<boolean>;
-		carriage: {
+		readonly stop: () => boolean;
+		readonly pass: (data?: any) => Promise<boolean>;
+		readonly carriage: {
 			[idx: string]: any;
 		};
-		server: Server;
+		readonly server: Server;
 		stp: boolean;
 		fncntr: number;
-		reqcntr: number;
+		readonly reqcntr: number;
 	};
 	
 
@@ -69,16 +70,16 @@ export module Classes {
 	 */
 	export class Middleware {
 		name: string;
-		befores: string[];
-		afters: string[];
+		befores: string[] = [ ];
+		afters: string[] = [ ];
 		
-		_fromFile: boolean = false;
+		_fromFile?: boolean = false;
 		_idx: number = -1;
 		_before: number = 0;
 		_after: number = 0;
 		
 		
-		constructor(name: string, befores: string[] = [ ], afters: string[] = [ ], body: (req: any, res: any, event: evt) => Promise<boolean>, _fromFile: boolean = false) {
+		public constructor(name: string, befores: string[] = [ ], afters: string[] = [ ], body: (req: any, res: any, event: evt) => Promise<boolean>, _fromFile: boolean = false) {
 			this.name = name.toString();
 			this.befores = Array.from(befores);
 			this.afters = Array.from(afters);
@@ -103,19 +104,19 @@ export module Classes {
 	 * @class Server
 	 * @extends {require("events").EventEmitter}
 	 */
-	export class Server extends require("events").EventEmitter {
+	export class Server extends EventEmitter {
 		
-		opts: Options.ServerOptions;
-		httpsrv: http.Server;
+		readonly opts: Options.ServerOptions;
+		readonly httpsrv: http.Server;
 		mwrs: Middleware[] = [ ];
 		logs: string = "";
 		_debuglog: string = "";
 		_reqcntr: number = 0;
-		data: {
+		readonly data: {
 			[idx: string]: any
 		} = { };
 		
-		static defaultOpts: Options.ServerOptions = {
+		public static defaultOpts: Options.ServerOptions = {
 			serveDir: path.resolve("__Server"),
 			index: /^index\.html?x?$/i,
 			root: '/', //url mapped to serveDir
@@ -155,7 +156,7 @@ export module Classes {
 		};
 		
 		
-		constructor(opts: Options.ServerOptions = Server.defaultOpts) {
+		public constructor(opts: Options.ServerOptions = Server.defaultOpts) {
 			super();
 			
 			this.opts = Object.assign({ }, Server.defaultOpts);
@@ -199,7 +200,7 @@ export module Classes {
 		 * @param bb - middleware-to-bind / port-to-listen
 		 * @param rec - allow order recalculation
 		 */
-		async bind(bb: number | Middleware = this.opts.port, rec: boolean = true): Promise<http.Server> {
+		public async bind(bb: number | Middleware = this.opts.port, rec: boolean = true): Promise<http.Server> {
 			if (bb instanceof Middleware) {
 				this.mwrs.push(bb);
 				if (rec) this._recalc();
@@ -217,7 +218,7 @@ export module Classes {
 		 * @param from=path.join(this.opts.serveDir,this.opts.mwdir) - directory
 		 */
 		_loadMW(from: string = path.join(this.opts.serveDir, this.opts.mwdir)): void {
-			return fs.readdir(from, (err: Error, files: string[]) => {
+			return fs.readdir(from, (err: Error, files: string[]): void => {
 				if (!err) {
 					for (let file of files) {
 						let name: string = path.join(this.opts.serveDir, this.opts.mwdir, file);
@@ -235,7 +236,7 @@ export module Classes {
 		/** 
 		 * Order middlewares
 		 */
-		_recalc(): void {
+		private _recalc(): void {
 			let cntr: number = 0,
 				repeat: number = 0;
 			
@@ -280,7 +281,7 @@ export module Classes {
 		 * Log stuff
 		 * @param msg - joined with whitespace
 		 */
-		log(...msg: any[]): this {
+		public log(...msg: any[]): this {
 			this.logs += msg.join(' ') + '\n';
 			this.emit("log", ...msg);
 			return this;
@@ -296,6 +297,33 @@ export module Classes {
 			this.emit("_debug", ...msg);
 			return this;
 		} //_debug
+
+		//mwloaded, request, _debug, log
+
+		//@Override
+		public on(event: "mwloaded", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: "request", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: "_debug", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: "log", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.on(event, listener);
+		} //on
+		//@Override
+		public once(event: "mwloaded", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: "request", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: "_debug", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: "log", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.once(event, listener);
+		} //once
 		
 	} //Server
 	

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http = require("http");
 const fs = require("fs-extra");
 const path = require("path");
+const events_1 = require("events");
 var Classes;
 (function (Classes) {
     let Errors;
@@ -20,6 +21,8 @@ var Classes;
      */
     class Middleware {
         constructor(name, befores = [], afters = [], body, _fromFile = false) {
+            this.befores = [];
+            this.afters = [];
             this._fromFile = false;
             this._idx = -1;
             this._before = 0;
@@ -45,7 +48,7 @@ var Classes;
      * @class Server
      * @extends {require("events").EventEmitter}
      */
-    class Server extends require("events").EventEmitter {
+    class Server extends events_1.EventEmitter {
         constructor(opts = Server.defaultOpts) {
             super();
             this.mwrs = [];
@@ -177,6 +180,14 @@ var Classes;
             this.emit("_debug", ...msg);
             return this;
         } //_debug
+        //@Override
+        on(event, listener) {
+            return super.on(event, listener);
+        } //on
+        //@Override
+        once(event, listener) {
+            return super.once(event, listener);
+        } //once
     } //Server
     Server.defaultOpts = {
         serveDir: path.resolve("__Server"),
